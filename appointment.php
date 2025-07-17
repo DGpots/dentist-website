@@ -3,13 +3,15 @@
 include "./conn.php";
 
 if(isset($_POST['appointment'])){
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $phone = $_POST['phone'];
-    $date = $_POST['date'];
+    $name  = trim($_POST['name']);
+    $email = trim($_POST['email']);
+    $phone = trim($_POST['phone']);
+    $date  = trim($_POST['date']);
 
-    $q = " INSERT INTO `appt`(`name`, `email`, `phone`, `date`) VALUES ('$name','$email','$phone','$date') ";
-    $res = mysqli_query($conn, $q);
+    $stmt = $conn->prepare("INSERT INTO `appt`(`name`, `email`, `phone`, `date`) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param('ssss', $name, $email, $phone, $date);
+    $res = $stmt->execute();
+    $stmt->close();
 
     if($res)
     {
@@ -23,7 +25,7 @@ if(isset($_POST['appointment'])){
         $msg = "Failed to book your appointment";
         echo ("<script LANGUAGE='JavaScript'>
             window.alert('$msg');
-            window.location.href='./index.php;
+            window.location.href='./index.php';
             </script>");
     }
 }
